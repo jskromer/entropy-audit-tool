@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entropy Audit - Weighted Factor Visualization</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #bulb {
+            width: 100px;
+            height: 100px;
+            background-color: green;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            opacity: 0.1;
+            transition: background-color 0.3s, opacity 0.3s;
+        }
+        input[type="range"] {
+            width: 300px;
+        }
+        #entropyScore {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+        #statusText {
+            font-size: 16px;
+            margin-top: 5px;
+            font-family: sans-serif;
+        }
+        .label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="margin-bottom: 5px;">Entropy Audit</h2>
+    <div class="label">Weighted Sum of Noisy Factors</div>
+    <div id="bulb"></div>
+    <div id="entropyScore">Entropy: 10</div>
+    <div id="statusText">Low Impact</div>
+    <input type="range" id="slider" min="0" max="100" value="10">
+    
+    <script>
+        const slider = document.getElementById('slider');
+        const bulb = document.getElementById('bulb');
+        const entropyScore = document.getElementById('entropyScore');
+        const statusText = document.getElementById('statusText');
+        let blinkInterval = null;
+
+        function updateEntropy(value) {
+            // Update score display
+            entropyScore.textContent = `Entropy: ${value}`;
+
+            // Clear any existing blink interval
+            if (blinkInterval) {
+                clearInterval(blinkInterval);
+                blinkInterval = null;
+            }
+
+            // Determine status and visual behavior based on entropy score
+            let status = '';
+
+            if (value <= 15) {
+                // 0-15: Green - Low entropy, stable system
+                bulb.style.backgroundColor = 'green';
+                const brightness = value / 15;
+                bulb.style.opacity = brightness;
+                status = 'Low Impact - Stable System';
+                statusText.style.color = 'green';
+            } else if (value <= 50) {
+                // 16-50: Yellow - Moderate entropy, manageable noise
+                bulb.style.backgroundColor = 'yellow';
+                const brightness = (value - 15) / 35;
+                bulb.style.opacity = brightness;
+                status = 'Moderate Impact - Noise Present';
+                statusText.style.color = '#ccaa00';
+            } else {
+                // 51-100: Red - High entropy, critical noise levels
+                bulb.style.backgroundColor = 'red';
+                status = 'High Impact - Critical Noise';
+                statusText.style.color = 'red';
+
+                // Calculate blink speed: from 500ms at 51 to 50ms at 100
+                const blinkSpeed = 500 - ((value - 50) / 50) * 450;
+
+                blinkInterval = setInterval(function() {
+                    bulb.style.opacity = bulb.style.opacity == '1' ? '0.1' : '1';
+                }, blinkSpeed);
+            }
+
+            statusText.textContent = status;
+        }
+
+        // Initialize
+        updateEntropy(parseInt(slider.value));
+
+        // Update on slider change
+        slider.addEventListener('input', function() {
+            updateEntropy(parseInt(this.value));
+        });
+    </script>
+</body>
+</html>

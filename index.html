@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entropy Audit Dashboard - Interactive M&V Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .factors-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .category {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .category-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .category-weight {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .factor-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #e1e8ed;
+        }
+
+        .factor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .factor-name {
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        .factor-weight {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .factor-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            background: #dfe6e9;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .noise-value {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .contribution {
+            font-size: 0.85em;
+            color: #95a5a6;
+            margin-top: 5px;
+        }
+
+        .results-panel {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .entropy-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .bulb-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        #bulb {
+            width: 120px;
+            height: 120px;
+            background-color: green;
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255,255,255,0.3);
+            transition: background-color 0.3s, opacity 0.3s;
+        }
+
+        .entropy-score {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .entropy-status {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .breakdown {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .breakdown h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .category-bar {
+            margin-bottom: 15px;
+        }
+
+        .category-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .bar-container {
+            background: #ecf0f1;
+            height: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        .action-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .action-header {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .action-content {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .action-green {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .action-yellow {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .action-red {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .action-critical {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .action-details {
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .top-factors {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .top-factors h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .factor-rank {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .rank-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 15px;
+        }
+
+        .rank-details {
+            flex: 1;
+        }
+
+        .rank-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .rank-contribution {
+            font-size: 0.85em;
+            color: #7f8c8d;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .collapsed .factor-item {
+            display: none;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+
+        .collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Entropy Audit Dashboard</h1>
+            <p>Interactive M&V Baseline Risk Assessment</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Panel: Factor Inputs -->
+            <div class="factors-panel" id="factorsPanel">
+                <!-- Categories will be dynamically generated -->
+            </div>
+
+            <!-- Right Panel: Results -->
+            <div class="results-panel">
+                <div class="entropy-display">
+                    <div class="bulb-container">
+                        <div id="bulb"></div>
+                    </div>
+                    <div class="entropy-score" id="entropyScore">0</div>
+                    <div class="entropy-status" id="entropyStatus">Low Impact - Stable System</div>
+                </div>
+
+                <div class="breakdown">
+                    <h3>📊 Category Breakdown</h3>
+                    <div id="categoryBreakdown"></div>
+                </div>
+
+                <div class="action-panel">
+                    <div class="action-header">⚡ Recommended Action</div>
+                    <div id="actionContent"></div>
+                </div>
+
+                <div class="top-factors">
+                    <h3>🏆 Top Contributing Factors</h3>
+                    <div id="topFactors"></div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn" onclick="resetAll()">Reset All</button>
+                    <button class="btn" onclick="loadScenario('low')">Low Entropy</button>
+                    <button class="btn" onclick="loadScenario('moderate')">Moderate</button>
+                    <button class="btn" onclick="loadScenario('high')">High Risk</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Factor definitions with weights
+        const factorData = {
+            "Measurement": {
+                weight: 0.31,
+                color: "#3498db",
+                factors: [
+                    { name: "Sensor Drift", weight: 0.08, description: "Days since calibration" },
+                    { name: "Data Completeness", weight: 0.10, description: "% missing data" },
+                    { name: "Sampling Frequency", weight: 0.06, description: "Temporal resolution" },
+                    { name: "Measurement Error", weight: 0.07, description: "Instrument precision" }
+                ]
+            },
+            "Model": {
+                weight: 0.46,
+                color: "#9b59b6",
+                factors: [
+                    { name: "Model Misspecification", weight: 0.12, description: "Wrong functional form" },
+                    { name: "Parameter Uncertainty", weight: 0.09, description: "Coefficient CI" },
+                    { name: "Omitted Variables", weight: 0.10, description: "Missing confounders" },
+                    { name: "Calibration Staleness", weight: 0.08, description: "Time since update" },
+                    { name: "Extrapolation Risk", weight: 0.07, description: "Out-of-range operation" }
+                ]
+            },
+            "Environmental": {
+                weight: 0.15,
+                color: "#27ae60",
+                factors: [
+                    { name: "Temperature Deviation", weight: 0.04, description: "Setpoint drift" },
+                    { name: "Humidity Control", weight: 0.03, description: "RH deviation" },
+                    { name: "Lighting Standards", weight: 0.03, description: "Illumination changes" },
+                    { name: "Air Quality Drift", weight: 0.03, description: "Ventilation rate" },
+                    { name: "Pressure Control", weight: 0.02, description: "Building envelope" }
+                ]
+            },
+            "Operational": {
+                weight: 0.23,
+                color: "#e67e22",
+                factors: [
+                    { name: "Energy Drift", weight: 0.08, description: "Efficiency loss" },
+                    { name: "Equipment Degradation", weight: 0.06, description: "Performance decay" },
+                    { name: "Maintenance Variance", weight: 0.04, description: "Missed PMs" },
+                    { name: "Operating Hours Drift", weight: 0.05, description: "Schedule changes" }
+                ]
+            },
+            "Economic/Regulatory": {
+                weight: 0.35,
+                color: "#e74c3c",
+                factors: [
+                    { name: "Tariff Changes", weight: 0.09, description: "Rate structure" },
+                    { name: "Demand Charges", weight: 0.06, description: "Peak pricing" },
+                    { name: "Regulatory Changes", weight: 0.08, description: "Code updates" },
+                    { name: "Legal Requirements", weight: 0.07, description: "Compliance mandates" },
+                    { name: "Market Shifts", weight: 0.05, description: "Energy volatility" }
+                ]
+            },
+            "System": {
+                weight: 0.23,
+                color: "#c0392b",
+                factors: [
+                    { name: "Occupancy Changes", weight: 0.06, description: "Usage patterns" },
+                    { name: "External Shocks", weight: 0.08, description: "Pandemic, disasters" },
+                    { name: "Behavioral Adaptation", weight: 0.04, description: "Gaming, equation effects" },
+                    { name: "Technology Changes", weight: 0.05, description: "Equipment replacement" }
+                ]
+            }
+        };
+
+        let factorValues = {};
+        let blinkInterval = null;
+
+        // Initialize
+        function init() {
+            renderFactors();
+            calculateEntropy();
+        }
+
+        function renderFactors() {
+            const panel = document.getElementById('factorsPanel');
+
+            Object.keys(factorData).forEach(categoryName => {
+                const category = factorData[categoryName];
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                categoryDiv.innerHTML = `
+                    <div class="category-header" onclick="toggleCategory(this)">
+                        <div class="category-title">
+                            <span class="toggle-icon">▼</span> ${categoryName}
+                        </div>
+                        <div class="category-weight">Total Weight: ${(category.weight * 100).toFixed(0)}%</div>
+                    </div>
+                    <div class="category-factors">
+                        ${category.factors.map(factor => {
+                            const factorId = `${categoryName}-${factor.name}`.replace(/\s+/g, '-');
+                            factorValues[factorId] = 0;
+
+                            return `
+                                <div class="factor-item">
+                                    <div class="factor-header">
+                                        <div class="factor-name">${factor.name}</div>
+                                        <div class="factor-weight">Weight: ${(factor.weight * 100).toFixed(0)}%</div>
+                                    </div>
+                                    <div style="font-size: 0.85em; color: #7f8c8d; margin-bottom: 8px;">${factor.description}</div>
+                                    <div class="factor-input">
+                                        <input type="range"
+                                               class="slider"
+                                               id="${factorId}"
+                                               min="0"
+                                               max="100"
+                                               value="0"
+                                               oninput="updateFactor('${factorId}', this.value, ${factor.weight})">
+                                        <div class="noise-value" id="${factorId}-value">0%</div>
+                                    </div>
+                                    <div class="contribution" id="${factorId}-contribution">Contribution: 0.00 points</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                panel.appendChild(categoryDiv);
+            });
+        }
+
+        function toggleCategory(header) {
+            header.parentElement.classList.toggle('collapsed');
+        }
+
+        function updateFactor(factorId, value, weight) {
+            factorValues[factorId] = parseInt(value);
+            const noise = value / 100;
+            const contribution = noise * weight * 100;
+
+            document.getElementById(`${factorId}-value`).textContent = `${value}%`;
+            document.getElementById(`${factorId}-contribution`).textContent =
+                `Contribution: ${contribution.toFixed(2)} points`;
+
+            calculateEntropy();
+        }
+
+        function calculateEntropy() {
+            let totalEntropy = 0;
+            let categoryContributions = {};
+            let allContributions = [];
+
+            // Calculate contributions
+            Object.keys(factorData).forEach(categoryName => {
+                const category = factorData[categoryName];
+                let categoryTotal = 0;
+
+                category.factors.forEach(factor => {
+                    const factorId = `${categoryName}-${factor.name}`.replace(/\s+/g, '-');
+                    const noise = factorValues[factorId] / 100;
+                    const contribution = noise * factor.weight * 100;
+
+                    categoryTotal += contribution;
+                    totalEntropy += contribution;
+
+                    allContributions.push({
+                        name: factor.name,
+                        category: categoryName,
+                        contribution: contribution
+                    });
+                });
+
+                categoryContributions[categoryName] = categoryTotal;
+            });
+
+            // Update display
+            updateEntropyDisplay(totalEntropy);
+            updateCategoryBreakdown(categoryContributions, totalEntropy);
+            updateTopFactors(allContributions);
+            updateActionPanel(totalEntropy);
+        }
+
+        function updateEntropyDisplay(entropy) {
+            const score = Math.round(entropy);
+            document.getElementById('entropyScore').textContent = score;
+
+            const bulb = document.getElementById('bulb');
+            const statusEl = document.getElementById('entropyStatus');
+
+            // Clear any existing blink
+            if (blinkInterval) {
+                clearInterval(blinkInterval);
+                blinkInterval = null;
+            }
+
+            if (score <= 15) {
+                bulb.style.backgroundColor = 'green';
+                bulb.style.opacity = score / 15;
+                statusEl.textContent = 'Low Impact - Stable System';
+            } else if (score <= 50) {
+                bulb.style.backgroundColor = 'yellow';
+                bulb.style.opacity = (score - 15) / 35;
+                statusEl.textContent = 'Moderate Impact - Noise Present';
+            } else {
+                bulb.style.backgroundColor = 'red';
+                statusEl.textContent = 'High Impact - Critical Noise';
+
+                const blinkSpeed = 500 - ((score - 50) / 50) * 450;
+                blinkInterval = setInterval(() => {
+                    bulb.style.opacity = bulb.style.opacity == '1' ? '0.1' : '1';
+                }, blinkSpeed);
+            }
+        }
+
+        function updateCategoryBreakdown(contributions, total) {
+            const container = document.getElementById('categoryBreakdown');
+            container.innerHTML = '';
+
+            Object.keys(contributions).forEach(category => {
+                const value = contributions[category];
+                const percentage = total > 0 ? (value / total * 100) : 0;
+
+                const barDiv = document.createElement('div');
+                barDiv.className = 'category-bar';
+                barDiv.innerHTML = `
+                    <div class="category-bar-label">
+                        <span>${category}</span>
+                        <span>${value.toFixed(1)} pts (${percentage.toFixed(0)}%)</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: ${percentage}%">
+                            ${percentage > 10 ? percentage.toFixed(0) + '%' : ''}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(barDiv);
+            });
+        }
+
+        function updateTopFactors(contributions) {
+            const sorted = contributions
+                .filter(f => f.contribution > 0)
+                .sort((a, b) => b.contribution - a.contribution)
+                .slice(0, 5);
+
+            const container = document.getElementById('topFactors');
+            container.innerHTML = sorted.length > 0
+                ? sorted.map((factor, index) => `
+                    <div class="factor-rank">
+                        <div class="rank-number">${index + 1}</div>
+                        <div class="rank-details">
+                            <div class="rank-name">${factor.name}</div>
+                            <div class="rank-contribution">${factor.category} • ${factor.contribution.toFixed(2)} points</div>
+                        </div>
+                    </div>
+                `).join('')
+                : '<p style="text-align: center; color: #95a5a6;">No factors contributing yet</p>';
+        }
+
+        function updateActionPanel(entropy) {
+            const container = document.getElementById('actionContent');
+            const score = Math.round(entropy);
+
+            let className, title, details, frequency;
+
+            if (score <= 15) {
+                className = 'action-green';
+                title = '✅ Continue Standard M&V';
+                details = 'System is stable with low entropy. Continue with routine protocols and annual updates.';
+                frequency = 'Update Frequency: Annual';
+            } else if (score <= 50) {
+                className = 'action-yellow';
+                title = '⚠️ Enhanced Monitoring Required';
+                details = 'Moderate entropy detected. Increase monitoring frequency and consider recalibration of baseline model.';
+                frequency = 'Update Frequency: Quarterly';
+            } else if (score <= 75) {
+                className = 'action-red';
+                title = '🚨 Urgent: Redesign Baseline';
+                details = 'High entropy detected. Immediate action required: redesign baseline with adaptive protocols and scenario analysis.';
+                frequency = 'Update Frequency: Monthly';
+            } else {
+                className = 'action-critical';
+                title = '🔴 CRITICAL: Force Majeure';
+                details = 'Critical entropy level. Baseline is invalid. Invoke force majeure protocols and suspend M&V pending resolution.';
+                frequency = 'Update Frequency: Real-time crisis management';
+            }
+
+            container.innerHTML = `
+                <div class="action-content ${className}">
+                    <div class="action-title">${title}</div>
+                    <div class="action-details">${details}</div>
+                    <div class="action-details" style="margin-top: 10px; font-weight: 600;">${frequency}</div>
+                </div>
+            `;
+        }
+
+        function resetAll() {
+            Object.keys(factorValues).forEach(factorId => {
+                factorValues[factorId] = 0;
+                const slider = document.getElementById(factorId);
+                if (slider) slider.value = 0;
+                document.getElementById(`${factorId}-value`).textContent = '0%';
+                document.getElementById(`${factorId}-contribution`).textContent = 'Contribution: 0.00 points';
+            });
+            calculateEntropy();
+        }
+
+        function loadScenario(scenario) {
+            resetAll();
+
+            const scenarios = {
+                low: {
+                    'Measurement-Sensor-Drift': 10,
+                    'Measurement-Data-Completeness': 5,
+                    'Model-Model-Misspecification': 5
+                },
+                moderate: {
+                    'Measurement-Sensor-Drift': 40,
+                    'Measurement-Data-Completeness': 20,
+                    'Model-Calibration-Staleness': 50,
+                    'Environmental-Temperature-Deviation': 30,
+                    'Operational-Energy-Drift': 25
+                },
+                high: {
+                    'Measurement-Sensor-Drift': 66,
+                    'Model-Calibration-Staleness': 50,
+                    'Model-Omitted-Variables': 30,
+                    'Environmental-Temperature-Deviation': 75,
+                    'Operational-Energy-Drift': 80,
+                    'Economic/Regulatory-Tariff-Changes': 50,
+                    'Economic/Regulatory-Regulatory-Changes': 60,
+                    'System-Occupancy-Changes': 75,
+                    'System-External-Shocks': 80
+                }
+            };
+
+            const values = scenarios[scenario];
+            Object.keys(values).forEach(factorId => {
+                const slider = document.getElementById(factorId);
+                if (slider) {
+                    slider.value = values[factorId];
+                    const weight = parseFloat(slider.getAttribute('oninput').match(/[\d.]+/)[0]);
+                    updateFactor(factorId, values[factorId], weight);
+                }
+            });
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
