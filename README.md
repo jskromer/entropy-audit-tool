@@ -19,6 +19,9 @@ The Entropy Audit Tool helps M&V professionals assess baseline reliability by ca
 - 📈 **Category Breakdown** - Contribution analysis across 6 major categories
 - 🎯 **Scenario Testing** - Pre-loaded low/moderate/high risk scenarios
 - ⚡ **Action Recommendations** - Automatic governance protocols by entropy zone
+- 🏗️ **Baseline Model Structure** - Comprehensive documentation of how entropy arises from EnergyPlus simulations
+- 📉 **Baseline vs. Actual Visualization** - Interactive charts showing divergence between predictions and measured data
+- 🔗 **EnergyPlus MCP Integration** - Full integration guide for programmatic baseline model interaction
 
 ---
 
@@ -85,6 +88,56 @@ The Entropy Audit Tool helps M&V professionals assess baseline reliability by ca
 
 ---
 
+## Baseline Model & EnergyPlus Integration
+
+### Understanding How Entropy Arises
+
+The entropy audit framework quantifies **divergence between baseline predictions and measured reality**. The baseline is typically an **EnergyPlus building energy simulation** that represents expected performance under controlled conditions.
+
+**Six Degradation Pathways**:
+
+1. **Measurement (31%)**: Sensor drift, data gaps, sampling errors
+2. **Model (46%)**: Wrong geometry, parameter uncertainty, calibration staleness
+3. **Environmental (15%)**: Setpoint changes, ventilation increases, envelope leaks
+4. **Operational (23%)**: Equipment degradation, maintenance variance, schedule drift
+5. **Economic/Regulatory (35%)**: Tariff changes, code updates, compliance mandates
+6. **System (23%)**: Occupancy changes, external shocks (COVID-19), behavioral adaptation
+
+### EnergyPlus MCP Server
+
+Use the **[EnergyPlus MCP Server](https://github.com/jskromer/energyplus-mcp)** to programmatically:
+- Load and validate baseline IDF files
+- Run simulations with actual weather data
+- Extract time-series energy predictions
+- Compare to measured utility bills
+- Calculate deviations and map to entropy factors
+
+**Workflow**:
+```
+1. Load baseline EnergyPlus model (IDF)
+2. Run simulation with actual weather (EPW)
+3. Extract predictions (kWh by month)
+4. Compare to measured utility data
+5. Calculate deviations (measured - baseline)
+6. Map deviations to entropy factors
+7. Generate weighted entropy score
+```
+
+### Documentation
+
+- **[BaselineModel_Structure.md](BaselineModel_Structure.md)** - Detailed explanation of how entropy arises from baseline models
+- **[EnergyPlus_MCP_Integration.md](EnergyPlus_MCP_Integration.md)** - Step-by-step integration guide with code examples
+
+### Interactive Visualization
+
+The dashboard now includes a **Baseline vs. Actual** comparison chart showing:
+- EnergyPlus baseline predictions (blue line)
+- Measured actual consumption (red line)
+- Entropy region (shaded area between lines)
+- Four example scenarios: Stable, Equipment Degrading, Occupancy Change, COVID-19 Shock
+
+---
+
 ## Calculation Formula
 
 ```
@@ -138,10 +191,15 @@ Where:
 
 ## Files
 
-- **index.html** - Main interactive dashboard
+### Dashboard & Tools
+- **index.html** - Main interactive dashboard with baseline visualization
 - **Sliderandbulb.html** - Simple entropy indicator visualization
+
+### Documentation
+- **README.md** - This file (overview and quick start)
+- **BaselineModel_Structure.md** - How entropy arises from EnergyPlus baseline models
+- **EnergyPlus_MCP_Integration.md** - Complete integration guide with code examples
 - **EntropyAudit_QuickReference.md** - One-page summary
-- **README.md** - This file
 
 ---
 
@@ -191,17 +249,27 @@ For questions, feedback, or collaboration:
 
 ---
 
-**Version**: 1.0
+**Version**: 2.0
 **Last Updated**: January 2025
 **Status**: Production Ready
+
+**What's New in v2.0**:
+- ✅ Baseline model structure documentation
+- ✅ EnergyPlus MCP Server integration guide
+- ✅ Baseline vs. Actual comparison visualization
+- ✅ Interactive scenario analysis (Stable, Degrading, Occupancy, COVID-19)
+- ✅ Comprehensive workflow examples
 
 ---
 
 ## Acknowledgments
 
 Built on principles from:
-- Counterfactual Design Paradigm
-- Cynefin Complexity Framework
-- Stacey Matrix
-- IPMVP (International Performance Measurement & Verification Protocol)
-- Information Theory (Shannon Entropy)
+- **EnergyPlus** - Building energy simulation engine
+- **EnergyPlus MCP Server** - AI-assisted baseline model interaction
+- **Counterfactual Design Paradigm** - M&V uncertainty framework
+- **Cynefin Complexity Framework** - Decision-making in complex systems
+- **Stacey Matrix** - Agreement/certainty mapping
+- **IPMVP** - International Performance Measurement & Verification Protocol
+- **ASHRAE Guideline 14** - Measurement of Energy and Demand Savings
+- **Information Theory** - Shannon Entropy concepts
