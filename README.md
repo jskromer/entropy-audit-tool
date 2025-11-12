@@ -81,10 +81,28 @@ The Entropy Audit Tool helps M&V professionals assess baseline reliability by ca
 
 ## Quick Start
 
-1. **Open the Dashboard**: [index.html](https://jskromer.github.io/entropy-audit-tool/)
-2. **Adjust Sliders**: Set noise levels (0-100%) for each factor
+### Online Dashboard
+
+**🌐 [Launch v2.0 Dashboard](https://jskromer.github.io/entropy-audit-tool/)**
+
+> **Note**: If you see v1.0, GitHub Pages may still be deploying. Clear your browser cache (`Ctrl+Shift+R` or `Cmd+Shift+R`) or wait 2-5 minutes for deployment to complete.
+
+### Using the Dashboard
+
+1. **Explore Baseline Structure**: Click "📐 How Entropy Arises from Baseline Models" at the top to learn about EnergyPlus integration
+2. **Adjust Sliders**: Set noise levels (0-100%) for each of the 30+ entropy factors
 3. **View Results**: Watch entropy score, bulb color, and recommended actions update in real-time
-4. **Test Scenarios**: Click pre-loaded scenario buttons to see typical cases
+4. **Baseline vs. Actual Chart**: Scroll to bottom, click "Toggle Chart" to see visualization
+5. **Test Scenarios**: Try the 4 example scenarios (Stable, Equipment Degrading, Occupancy Change, COVID-19)
+
+### Local Installation
+
+```bash
+git clone https://github.com/jskromer/entropy-audit-tool.git
+cd entropy-audit-tool
+python3 -m http.server 8000
+# Open http://localhost:8000/index.html
+```
 
 ---
 
