@@ -394,6 +394,86 @@
             <p>Interactive M&V Baseline Risk Assessment</p>
         </div>
 
+        <!-- Baseline Model Info Section -->
+        <div style="background: white; margin: 20px; padding: 25px; border-radius: 15px; border-left: 5px solid #667eea;">
+            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;" onclick="toggleBaselineInfo()">
+                <div>
+                    <h2 style="color: #2c3e50; margin-bottom: 5px;">📐 How Entropy Arises from Baseline Models</h2>
+                    <p style="color: #7f8c8d; margin: 0;">Click to learn about the EnergyPlus baseline structure</p>
+                </div>
+                <span id="baselineToggle" style="font-size: 1.5em; color: #667eea;">▼</span>
+            </div>
+
+            <div id="baselineInfo" style="display: none; margin-top: 20px;">
+                <div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px;">🏗️ The Baseline Model</h3>
+                    <p style="line-height: 1.8; color: #34495e;">
+                        The <strong>baseline</strong> is an <strong>EnergyPlus building energy simulation</strong> that represents
+                        expected performance under controlled conditions. It includes:
+                    </p>
+                    <ul style="line-height: 1.8; color: #34495e; margin-top: 10px;">
+                        <li><strong>Building Geometry</strong>: Zones, surfaces, materials with thermal properties</li>
+                        <li><strong>HVAC Systems</strong>: Equipment topology, control sequences, design capacities</li>
+                        <li><strong>Internal Loads</strong>: Occupancy schedules, lighting, equipment (plug loads)</li>
+                        <li><strong>Environmental Inputs</strong>: Weather data, outdoor air, infiltration rates</li>
+                        <li><strong>Operational Schedules</strong>: Operating hours, setpoints, ventilation</li>
+                    </ul>
+                </div>
+
+                <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 4px solid #ffc107; margin-bottom: 20px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px;">⚠️ How Entropy Arises: Six Degradation Pathways</h3>
+                    <p style="line-height: 1.8; color: #34495e; margin-bottom: 15px;">
+                        <strong>Entropy = Divergence between baseline predictions and measured reality</strong>
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 3px solid #3498db;">
+                            <strong style="color: #3498db;">1. Measurement (31%)</strong>
+                            <p style="margin-top: 8px; font-size: 0.9em; color: #555;">Sensors drift, data gaps, sampling errors obscure true performance</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 3px solid #9b59b6;">
+                            <strong style="color: #9b59b6;">2. Model (46%)</strong>
+                            <p style="margin-top: 8px; font-size: 0.9em; color: #555;">Wrong geometry, unknown parameters, calibration staleness</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 3px solid #27ae60;">
+                            <strong style="color: #27ae60;">3. Environmental (15%)</strong>
+                            <p style="margin-top: 8px; font-size: 0.9em; color: #555;">Setpoint changes, ventilation increases, envelope leaks</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 3px solid #e67e22;">
+                            <strong style="color: #e67e22;">4. Operational (23%)</strong>
+                            <p style="margin-top: 8px; font-size: 0.9em; color: #555;">Equipment degradation, maintenance variance, schedule drift</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 3px solid #e74c3c;">
+                            <strong style="color: #e74c3c;">5. Economic/Regulatory (35%)</strong>
+                            <p style="margin-top: 8px; font-size: 0.9em; color: #555;">Tariff changes, new codes, compliance mandates</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 3px solid #c0392b;">
+                            <strong style="color: #c0392b;">6. System (23%)</strong>
+                            <p style="margin-top: 8px; font-size: 0.9em; color: #555;">Occupancy changes, external shocks (COVID), behavioral adaptation</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #d4edda; padding: 20px; border-radius: 10px; border-left: 4px solid #28a745;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px;">🔗 EnergyPlus MCP Integration</h3>
+                    <p style="line-height: 1.8; color: #34495e; margin-bottom: 10px;">
+                        Use the <strong><a href="https://github.com/jskromer/energyplus-mcp" target="_blank" style="color: #667eea;">EnergyPlus MCP Server</a></strong>
+                        to programmatically interact with baseline models:
+                    </p>
+                    <ol style="line-height: 1.8; color: #34495e; margin-top: 10px;">
+                        <li>Load baseline IDF file and inspect building components</li>
+                        <li>Run simulation with actual weather data</li>
+                        <li>Extract time-series energy predictions</li>
+                        <li>Compare predictions to measured utility data</li>
+                        <li>Calculate deviations and map to entropy factors</li>
+                        <li>Generate weighted entropy score (this dashboard)</li>
+                    </ol>
+                    <p style="margin-top: 15px; font-weight: 600; color: #2c3e50;">
+                        📄 See <a href="BaselineModel_Structure.md" style="color: #667eea;">BaselineModel_Structure.md</a> for detailed workflow and examples
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <div class="main-content">
             <!-- Left Panel: Factor Inputs -->
             <div class="factors-panel" id="factorsPanel">
@@ -430,6 +510,58 @@
                     <button class="btn" onclick="loadScenario('low')">Low Entropy</button>
                     <button class="btn" onclick="loadScenario('moderate')">Moderate</button>
                     <button class="btn" onclick="loadScenario('high')">High Risk</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Baseline vs. Actual Visualization -->
+        <div style="background: white; margin: 20px; padding: 25px; border-radius: 15px; border-left: 5px solid #667eea;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #2c3e50; margin: 0;">📈 Baseline vs. Actual: How Entropy Arises</h2>
+                <button class="btn" onclick="toggleBaselineChart()" style="padding: 8px 20px;">Toggle Chart</button>
+            </div>
+
+            <div id="baselineChart" style="display: none;">
+                <p style="color: #7f8c8d; line-height: 1.6; margin-bottom: 20px;">
+                    This chart shows how entropy accumulates when measured energy consumption diverges from EnergyPlus baseline predictions.
+                    The <strong style="color: #667eea;">gap between lines</strong> represents entropy factors in action.
+                </p>
+
+                <!-- Chart Canvas -->
+                <div style="position: relative; height: 400px; background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                    <canvas id="comparisonCanvas"></canvas>
+                </div>
+
+                <!-- Legend -->
+                <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 30px; height: 3px; background: #667eea;"></div>
+                        <span style="color: #2c3e50; font-weight: 500;">EnergyPlus Baseline</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 30px; height: 3px; background: #e74c3c;"></div>
+                        <span style="color: #2c3e50; font-weight: 500;">Measured Actual</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 30px; height: 20px; background: rgba(231, 76, 60, 0.1); border: 2px dashed #e74c3c;"></div>
+                        <span style="color: #2c3e50; font-weight: 500;">Entropy (Divergence)</span>
+                    </div>
+                </div>
+
+                <!-- Scenario Selector -->
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px;">Example Scenarios</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                        <button class="btn" onclick="loadBaselineScenario('stable')">Stable System (Low Entropy)</button>
+                        <button class="btn" onclick="loadBaselineScenario('degrading')">Equipment Degrading</button>
+                        <button class="btn" onclick="loadBaselineScenario('occupancy')">Occupancy Change</button>
+                        <button class="btn" onclick="loadBaselineScenario('covid')">COVID-19 Shock</button>
+                    </div>
+
+                    <!-- Scenario Description -->
+                    <div id="scenarioDescription" style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px; border-left: 3px solid #667eea;">
+                        <p style="color: #34495e; margin: 0; line-height: 1.6;"></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -770,6 +902,251 @@
                     slider.value = values[factorId];
                     const weight = parseFloat(slider.getAttribute('oninput').match(/[\d.]+/)[0]);
                     updateFactor(factorId, values[factorId], weight);
+                }
+            });
+        }
+
+        // Toggle baseline info section
+        function toggleBaselineInfo() {
+            const info = document.getElementById('baselineInfo');
+            const toggle = document.getElementById('baselineToggle');
+
+            if (info.style.display === 'none') {
+                info.style.display = 'block';
+                toggle.textContent = '▲';
+            } else {
+                info.style.display = 'none';
+                toggle.textContent = '▼';
+            }
+        }
+
+        // Toggle baseline chart
+        function toggleBaselineChart() {
+            const chart = document.getElementById('baselineChart');
+            chart.style.display = chart.style.display === 'none' ? 'block' : 'none';
+
+            if (chart.style.display === 'block') {
+                // Initialize chart when first shown
+                loadBaselineScenario('stable');
+            }
+        }
+
+        // Draw baseline vs. actual comparison chart
+        function drawComparisonChart(baselineData, actualData, scenario) {
+            const canvas = document.getElementById('comparisonCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size
+            canvas.width = canvas.parentElement.clientWidth - 40;
+            canvas.height = 360;
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 50;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            // Find max value for scaling
+            const maxValue = Math.max(...baselineData, ...actualData) * 1.1;
+
+            // Draw grid lines
+            ctx.strokeStyle = '#e1e8ed';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (graphHeight / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+
+                // Y-axis labels
+                const value = maxValue - (maxValue / 5) * i;
+                ctx.fillStyle = '#7f8c8d';
+                ctx.font = '12px Segoe UI';
+                ctx.textAlign = 'right';
+                ctx.fillText(Math.round(value).toLocaleString() + ' kWh', padding - 10, y + 4);
+            }
+
+            // Draw X-axis labels (months)
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            ctx.fillStyle = '#7f8c8d';
+            ctx.font = '12px Segoe UI';
+            ctx.textAlign = 'center';
+            months.forEach((month, i) => {
+                const x = padding + (graphWidth / 11) * i;
+                ctx.fillText(month, x, height - padding + 20);
+            });
+
+            // Helper function to get point coordinates
+            function getPoint(index, value) {
+                const x = padding + (graphWidth / 11) * index;
+                const y = padding + graphHeight - (value / maxValue * graphHeight);
+                return { x, y };
+            }
+
+            // Fill area between lines (entropy region)
+            ctx.fillStyle = 'rgba(231, 76, 60, 0.1)';
+            ctx.beginPath();
+            ctx.moveTo(getPoint(0, baselineData[0]).x, getPoint(0, baselineData[0]).y);
+            baselineData.forEach((value, i) => {
+                const point = getPoint(i, value);
+                ctx.lineTo(point.x, point.y);
+            });
+            for (let i = actualData.length - 1; i >= 0; i--) {
+                const point = getPoint(i, actualData[i]);
+                ctx.lineTo(point.x, point.y);
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw baseline line (EnergyPlus)
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            baselineData.forEach((value, i) => {
+                const point = getPoint(i, value);
+                if (i === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
+            });
+            ctx.stroke();
+
+            // Draw baseline points
+            ctx.fillStyle = '#667eea';
+            baselineData.forEach((value, i) => {
+                const point = getPoint(i, value);
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Draw actual line (measured)
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            actualData.forEach((value, i) => {
+                const point = getPoint(i, value);
+                if (i === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
+            });
+            ctx.stroke();
+
+            // Draw actual points
+            ctx.fillStyle = '#e74c3c';
+            actualData.forEach((value, i) => {
+                const point = getPoint(i, value);
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Calculate statistics
+            const avgDeviation = actualData.reduce((sum, actual, i) => {
+                return sum + ((actual - baselineData[i]) / baselineData[i] * 100);
+            }, 0) / actualData.length;
+
+            const totalBaseline = baselineData.reduce((a, b) => a + b, 0);
+            const totalActual = actualData.reduce((a, b) => a + b, 0);
+            const annualDeviation = ((totalActual - totalBaseline) / totalBaseline * 100);
+
+            // Add statistics overlay
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillRect(width - padding - 180, padding + 10, 170, 80);
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(width - padding - 180, padding + 10, 170, 80);
+
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Segoe UI';
+            ctx.textAlign = 'left';
+            ctx.fillText('Annual Statistics', width - padding - 170, padding + 30);
+
+            ctx.font = '12px Segoe UI';
+            ctx.fillText(`Avg Deviation: ${avgDeviation.toFixed(1)}%`, width - padding - 170, padding + 50);
+            ctx.fillText(`Total Baseline: ${totalBaseline.toLocaleString()}`, width - padding - 170, padding + 65);
+            ctx.fillText(`Total Actual: ${totalActual.toLocaleString()}`, width - padding - 170, padding + 80);
+        }
+
+        // Load baseline scenario
+        function loadBaselineScenario(scenario) {
+            const scenarios = {
+                stable: {
+                    name: 'Stable System (Low Entropy)',
+                    baseline: [125000, 110000, 95000, 85000, 90000, 110000, 130000, 135000, 115000, 95000, 105000, 120000],
+                    actual: [127000, 112000, 93000, 87000, 88000, 108000, 132000, 137000, 117000, 93000, 107000, 118000],
+                    description: '✅ Model calibrated correctly. Minor variations (+/- 3%) due to weather and occupancy noise. Entropy Score: ~8 (Green Zone). No action needed.',
+                    entropyFactors: {
+                        'Measurement-Sensor-Drift': 5,
+                        'Measurement-Data-Completeness': 2,
+                        'Model-Calibration-Staleness': 3
+                    }
+                },
+                degrading: {
+                    name: 'Equipment Degrading',
+                    baseline: [125000, 110000, 95000, 85000, 90000, 110000, 130000, 135000, 115000, 95000, 105000, 120000],
+                    actual: [128000, 115000, 99000, 91000, 97000, 121000, 145000, 153000, 131000, 108000, 119000, 136000],
+                    description: '⚠️ Chiller efficiency degrading over summer months (Jun-Sep). Energy drift +12%. Deferred maintenance causing 15% performance loss. Entropy Score: ~28 (Yellow Zone). Recommend quarterly recalibration.',
+                    entropyFactors: {
+                        'Operational-Energy-Drift': 50,
+                        'Operational-Equipment-Degradation': 60,
+                        'Operational-Maintenance-Variance': 40,
+                        'Model-Calibration-Staleness': 20
+                    }
+                },
+                occupancy: {
+                    name: 'Occupancy Change (Hybrid Work)',
+                    baseline: [125000, 110000, 95000, 85000, 90000, 110000, 130000, 135000, 115000, 95000, 105000, 120000],
+                    actual: [100000, 88000, 76000, 68000, 72000, 88000, 104000, 108000, 92000, 76000, 84000, 96000],
+                    description: '📉 30% WFH adoption reduces internal loads. Baseline over-predicts by ~20%. Occupancy schedules in EnergyPlus no longer valid. Entropy Score: ~35 (Yellow Zone). Update baseline with new occupancy patterns.',
+                    entropyFactors: {
+                        'System-Occupancy-Changes': 70,
+                        'Operational-Operating-Hours-Drift': 50,
+                        'Model-Omitted-Variables': 30,
+                        'Environmental-Temperature-Deviation': 25
+                    }
+                },
+                covid: {
+                    name: 'COVID-19 External Shock',
+                    baseline: [125000, 110000, 95000, 85000, 90000, 110000, 130000, 135000, 115000, 95000, 105000, 120000],
+                    actual: [125000, 110000, 50000, 35000, 40000, 55000, 75000, 80000, 90000, 85000, 95000, 100000],
+                    description: '🚨 COVID-19 lockdown (Mar-May). Building closed, then phased reopening with 60% occupancy + enhanced ventilation. Baseline completely invalid. Entropy Score: ~72 (Red Zone). Force majeure condition - baseline redesign required.',
+                    entropyFactors: {
+                        'System-External-Shocks': 95,
+                        'System-Occupancy-Changes': 80,
+                        'Economic/Regulatory-Regulatory-Changes': 70,
+                        'Environmental-Air-Quality-Drift': 60,
+                        'Operational-Operating-Hours-Drift': 75,
+                        'Model-Omitted-Variables': 80
+                    }
+                }
+            };
+
+            const data = scenarios[scenario];
+
+            // Draw chart
+            drawComparisonChart(data.baseline, data.actual, scenario);
+
+            // Update description
+            const descEl = document.getElementById('scenarioDescription').querySelector('p');
+            descEl.textContent = data.description;
+
+            // Update factor sliders to match scenario
+            resetAll();
+            Object.keys(data.entropyFactors).forEach(factorId => {
+                const slider = document.getElementById(factorId);
+                if (slider) {
+                    const value = data.entropyFactors[factorId];
+                    slider.value = value;
+                    const weight = parseFloat(slider.getAttribute('oninput').match(/[\d.]+/)[0]);
+                    updateFactor(factorId, value, weight);
                 }
             });
         }
